@@ -1,0 +1,16 @@
+#git ignore 
+
+#ignore all the mode_modules 
+node_modules/
+
+#ignore all the download file except download directory itself 
+download/*
+
+#ignore all the dist file 
+dist/
+
+#ignore the .devcontianer file
+.devcontianer/
+
+#ignore the file under chrome file due to the size of file 
+chrome/*
