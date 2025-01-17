@@ -1,0 +1,62 @@
+{
+    "lender": {
+        "_comment": "institution",
+        "func": "let value = data[0];return data[0]? value : \"\""
+    },
+    "product": {
+        "_comment": "product_name",
+        "func":  "let value = data[2];return data[2]? value : \"\""
+    },
+    "rate": {
+        "_comment": "rate",
+        "func": "return data[3]? ((data[3]*100).toFixed(2) + \"%\") : \"\""
+    },
+    "comp": {
+        "_comment": "aapr_for_150k_over_25_years",
+        "func": "return data[4]? ((data[4]*100).toFixed(2) + \"%\") : \"\""
+    },
+    "property_type":{
+        "_comment": "property type selected among Owner Occupied,Investment,SMSF",
+        "func": " switch (as) {case \"Report-OO.csv\": return \"Owner Occupied\";case \"Report-INV.csv\": return \"Investment\";case \"Report-SMSF.csv\": return \"SMSF\";default: return \"\";}"
+    },
+    "loan_type": {
+        "_comment": "fixed_or_variable_rate",
+        "func": "let value = data[5];return data[5]? value : \"\""
+    },
+    "repayment": {  
+        "_comment": "principalintint_only_or_both / Principal+Int/Int Only or Both",
+        "func": "let value = data[6];return data[6]? value : \"\""
+    },
+    "lvr": { 
+        "_comment": "Maximum variation LVR",
+        "func": "return data[28]? (data[28] + \"%\") : \"\""
+    },
+    "apply": {
+        "_comment": "",
+        "func": "let property = \"\";switch (as) {case \"Report-OO.csv\": property = \"Owner Occupied\";case \"Report-INV.csv\": property = \"Investment\";case \"Report-SMSF.csv\": property = \"SMSF\";default: property = \"\";};return data[0]? `/quick-application/?lender=${data[0]}&rate=${((data[3]*100).toFixed(4) + \"%\")} p.a&product=${data[2]}&type=${property}||Get Started` : \"\""
+    },
+    "offset": {
+        "func": "return data[25]? data[25] : \"\";"
+    },
+    "upfront_fees": {
+        "func": "return data[0] ? (data[11] + data[12] + data[13] + data[14] + data[15] + data[16]).toString() : \"\";"
+    },
+    "ongoing_fees": {
+        "func": "return data[0] ? (data[17] + data[18]*12 + data[19]*2 + data[20]*4).toString() : \"\""
+    },
+    "discharge": { 
+        "func": "return data[0]? data[10].toString() : \"\""
+    },
+    "minimum_loan": {
+        "func": "return data[0]? data[7].toString() : \"\""
+    },
+    "family_guarantee": {  
+        "func": "return data[0]? data[21].toString() : \"\""
+    },
+    "construction": {
+        "func": "return data[0]? data[22].toString() : \"\""
+    },
+    "split_options": {
+        "func": "return data[0]? data[23].toString() : \"\""
+    }
+}

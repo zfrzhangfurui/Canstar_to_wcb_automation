@@ -8,7 +8,7 @@ import { ExcelModule } from './excel/excel.module';
 import { PuppeteerModule } from './puppeteer/puppeteer.module';
 import { WpModule } from './wp/wp.module';
 import { CommonModule } from './common/common.module';
-import { DataTransformationModule } from './data_transfer/data_transformation.module';
+
 
 @Module({
   imports: [
@@ -18,7 +18,6 @@ import { DataTransformationModule } from './data_transfer/data_transformation.mo
     PuppeteerModule,
     WpModule,
     CommonModule,
-    DataTransformationModule,
   ],
   providers: [AppService],
 })

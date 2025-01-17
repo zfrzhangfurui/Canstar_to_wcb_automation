@@ -55,7 +55,7 @@ export class DownloadService {
     const spansSelector = `xpath///span[starts-with(@title, "${viewName}")]/../..`;
     console.log(`====${spansSelector}`);
     await frame.waitForSelector(spansSelector, { timeout: 100000 });
-    console.log(1);
+
     const span = (await frame.$$(spansSelector))[0];
     await span.click();
     await sleep(10000);
@@ -64,19 +64,19 @@ export class DownloadService {
     await sleep(500);
     await frame.click(downloadBtnSelector);
     await sleep(500);
-    console.log(2);
+
     const dataDiv = await frame.waitForSelector(
       'div[data-tb-test-id="download-flyout-download-crosstab-MenuItem"]',
       { timeout: 10000 },
     );
-    console.log(3);
+
     await dataDiv.click();
     await sleep(500);
     const radio = await frame.waitForSelector(
       'input[data-tb-test-id="crosstab-options-dialog-radio-csv-RadioButton"]',
       { timeout: 10000 },
     );
-    console.log(4);
+
     await sleep(3000);
     await radio.click();
     await sleep(3000);
@@ -86,9 +86,8 @@ export class DownloadService {
       finalDownloadBtnSelector,
       { timeout: 10000 },
     );
-    console.log(5);
+
     await finalDownloadBtn.click();
-    console.log(6);
     // const targetPage: Page = (await this.handlePopDownload(page)) as Page;
     // page.browser().removeAllListeners();
     // await targetPage.waitForSelector(
@@ -99,8 +98,8 @@ export class DownloadService {
     //   'div[class^="ViewDataPanelContent__rightCtrls"] > button',
     // );
     // await btn.click();
+    console.log(`=====> name: ${viewName} downloaded`);
     await sleep(1000);
-    console.log(7);
   }
 
   async download() {

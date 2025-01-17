@@ -3,77 +3,77 @@ import { resolve } from 'path';
 
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { parse } from 'csv-parse/sync';
+// import { parse } from 'csv-parse/sync';
 import * as XLSX from 'xlsx';
-import { formatInTimeZone } from 'date-fns-tz';
+// import { formatInTimeZone } from 'date-fns-tz';
 
 import { CommonService } from 'src/common/common.service';
-import { DataTransformationService } from 'src/data_transfer/data_transformation.service';
 
 @Injectable()
 export class ExcelService {
   constructor(
     private readonly configService: ConfigService,
     private readonly commonService: CommonService,
-    private readonly dataTransformationService: DataTransformationService,
   ) { }
 
   async handle() {
     const dir = await this.commonService.getDir();
     console.log('dir to parse and export:', dir);
     if (!dir) {
-      console.warn('parse excel: 没有下载文件，无需执行');
+      console.warn('parse excel');
       return;
     }
     const base = await this.configService.get('env.chrome.downloadPath');
     const basepath = resolve(base, dir);
     const views = await this.configService.get('downloadConfig.views');
 
-    let data_arr:Array<{destSheetName: String, data:any[]}> = [];
+    const projection_rule = JSON.parse(readFileSync(await this.configService.get('env.projectionRulePath'), 'utf-8'));
+
+
+    let data_arr: Array<{ destSheetName: String, data: WCBTemplate[] }> = [];
     for (const { as, destSheetName } of views) {
       console.log(`===> parsing sheet ${as}`);
-      const file = readFileSync(resolve(basepath, as), 'utf16le');
-      let data: WCBOOCanstar[] = parse(file, {
-        encoding: 'utf16le',
-        bom: true,
-        columns: (header) => {
-          return header.map(col => col.replace(/ /g, '_').replace(/[^\w]/g, '').toLowerCase());
-        },
-        delimiter: '\t',
-        trim: true
-      },);
+      let book = XLSX.readFile(resolve(basepath, as), { type: 'file', dense: true });
+      let data = book.Sheets[book.SheetNames[0]]['!data'];
+      // console.log(data);
+      //delete titles
+      data.shift();
 
-      //to proform data filter 
-      data = data.filter((val)=>parseInt(val.rate.toString()) < 10);
-      
-      // console.log(`wcb canstar: ${data[0].maximum_lvr}`);
-      let edited_data_arr = data.map(val => {
-        let wcb = new WCBTemplate(val, as);
-        return Object.values(wcb)
-      });
+      //flat value
+      let preprocessed_data = data.map(val => val.map(val => val.v));
+      // console.log(preprocessed_data);
+      //proform data transfer and data filter
+      let processed_data = preprocessed_data.map(val => new WCBTemplate(as, projection_rule, val)).filter(val => parseInt(val.rate.toString()) < 10);
 
-      console.log(`WCB temple: ${edited_data_arr[0]}`);
       data_arr.push({
         destSheetName,
-        data: edited_data_arr
-      })      
+        data: processed_data
+      })
     }
 
-    const all = <{destSheetName:String, wpItem: String}>await this.configService.get('downloadConfig.all');
+    const all = <{ destSheetName: String, wpItem: String }>await this.configService.get('downloadConfig.all');
     console.log(`===> parsing sheet ${all.destSheetName}`);
     data_arr.push({
       destSheetName: all.destSheetName,
-      data: data_arr.reduce((acc,cur) =>acc.concat(JSON.parse(JSON.stringify(cur.data))), [])
+      data: data_arr.reduce((acc, cur) => {
+       const data:WCBTemplate[] =  JSON.parse(JSON.stringify(cur.data));
+       return acc.concat(data);
+      }, [])
     })
 
-    for (const {destSheetName, data} of  data_arr) {
+    for (const { destSheetName, data } of data_arr) {
       console.log(`===> generating sheet ${destSheetName}, number of rows: ${data.length}`);
-      data.unshift(['Lender', 'Product', 'Rate', 'Comp', 'Property Type', 'Loan type', 'Repayment', 'LVR', 'Apply', 'Offset',
+  
+      let sheet = XLSX.utils.json_to_sheet(data);
+
+      XLSX.utils.sheet_add_aoa(sheet,[['Lender', 'Product', 'Rate', 'Comp', 'Property Type', 'Loan type', 'Repayment', 'LVR', 'Apply', 'Offset',
         'Upfront fees', 'Ongoing fees', 'Discharge', 'Minimum loan', 'Family guarantee', 'Construction', 'Split options'
-      ]);
+      ]],{origin:"A1"});
+ 
 
       const book = XLSX.utils.book_new();
-      XLSX.utils.book_append_sheet(book, XLSX.utils.aoa_to_sheet(data), destSheetName.toString());
+      XLSX.utils.book_append_sheet(book,sheet, destSheetName.toString());
+
       XLSX.writeFile(book, resolve(basepath, `${destSheetName}.csv`), {
         type: 'file',
         bookType: 'csv',
@@ -83,96 +83,49 @@ export class ExcelService {
   }
 }
 
-interface WCBOOCanstar {
-  institution: String,
-  rank_of_sort_order: String,
-  product_name: String,
-  rate: String,
-  aapr_for_150k_over_25_years: String,
-  fixed_or_variable_rate: String,
-  principalintint_only_or_both: String,
-  min_loan_amount: String,
-  max_loan_amount: String,
-  max_term_of_loan_years: String,
-  discharge_fee: String,
-  application_fee: String,
-  valuation_charge: String,
-  documentation_charge: String,
-  legal_fee: String,
-  securitization_fee: String,
-  settlement_fee: String,
-  ongoing_annual_fee: String,
-  ongoing_monthly_fee: String,
-  ongoing_semiannual_fee: String,
-  ongoing_quarterly_fee: String,
-  family_guarantee_is_available: String,
-  construction_loan_available: String,
-  split_option_available: String,
-  mortgage_portable: String,
-  mortgage_offset_account_available: String,
-  additional_regular_repayments_allowed: String,
-  interest_in_advance_facility: String,
-  maximum_lvr: String,
-}
-
-
-
 class WCBTemplate {
   lender: String;
   product: String;
   rate: String;
   comp: String;
+  property_type: String;
   loan_type: String;
-  repayment: string;
+  repayment: String;
   lvr: String;
-  apply: string;
+  apply: String;
   offset: String;
-  upfront_fees: string;
-  ongoing_fees: string;
+  upfront_fees: String;
+  ongoing_fees: String;
   discharge: String;
   minimum_loan: String;
   family_guarantee: String;
   construction: String;
   split_options: String;
-  property_type: String;
 
-  constructor(canstar: WCBOOCanstar, as: String) {
-    this.lender = canstar.institution;
-    this.product = canstar.product_name ? canstar.product_name : "";
-    this.rate = canstar.rate ? canstar.rate : "";
-    this.comp = canstar.aapr_for_150k_over_25_years ? canstar.aapr_for_150k_over_25_years : "";
-    this.property_type = this.property_type_cal(as);
-    this.loan_type = canstar.fixed_or_variable_rate ? canstar.fixed_or_variable_rate : "";
-    this.repayment = canstar.principalintint_only_or_both ? this.repayment_cal(canstar.principalintint_only_or_both) : "";
-    this.lvr = canstar.maximum_lvr ? `${canstar.maximum_lvr}%` : "";
-    this.apply = canstar.institution ? `/quick-application/?lender=${this.lender}&rate=${this.rate} p.a&product=${this.product}&type=${this.property_type}||Get Started` : "";
-    this.offset = canstar.mortgage_offset_account_available ? canstar.mortgage_offset_account_available : "";
-    this.upfront_fees = canstar.institution ? (Number(canstar.application_fee) + Number(canstar.valuation_charge) + Number(canstar.documentation_charge) + Number(canstar.legal_fee) + Number(canstar.securitization_fee) + Number(canstar.settlement_fee)).toString() : "";
-    this.ongoing_fees = canstar.institution ? this.ongoing_fee_cal(canstar.ongoing_annual_fee, canstar.ongoing_monthly_fee, canstar.ongoing_quarterly_fee, canstar.ongoing_semiannual_fee) : "";
-    this.discharge = canstar.institution ? Number(canstar.discharge_fee).toString() : "";
-    this.minimum_loan = canstar.institution ? canstar.min_loan_amount : "";
-    this.family_guarantee = canstar.institution ? canstar.family_guarantee_is_available : "";
-    this.construction = canstar.institution ? canstar.construction_loan_available : "";
-    this.split_options = canstar.institution ? canstar.split_option_available : "";
+
+  constructor(as: String, projection_rule: Object, data: Array<string | number | boolean | Date>) {
+    this.lender = this.invoke_func<String>(as, projection_rule['lender'], data);
+    this.product = this.invoke_func<String>(as, projection_rule['product'], data);
+    this.rate = this.invoke_func<String>(as, projection_rule['rate'], data);
+    this.comp = this.invoke_func<String>(as, projection_rule['comp'], data);
+    this.property_type = this.invoke_func<String>(as, projection_rule['property_type'], data);
+    this.loan_type = this.invoke_func<String>(as, projection_rule['loan_type'], data);
+    this.repayment = this.invoke_func<String>(as, projection_rule['repayment'], data);
+    this.lvr = this.invoke_func<String>(as, projection_rule['lvr'], data);
+    this.apply = this.invoke_func<String>(as, projection_rule['apply'], data);
+    this.offset = this.invoke_func<String>(as, projection_rule['offset'], data);
+    this.upfront_fees = this.invoke_func<String>(as, projection_rule['upfront_fees'], data);
+    this.ongoing_fees = this.invoke_func<String>(as, projection_rule['ongoing_fees'], data);
+    this.discharge = this.invoke_func<String>(as, projection_rule['discharge'], data);
+    this.minimum_loan = this.invoke_func<String>(as, projection_rule['minimum_loan'], data);
+    this.family_guarantee = this.invoke_func<String>(as, projection_rule['family_guarantee'], data);
+    this.construction = this.invoke_func<String>(as, projection_rule['construction'], data);
+    this.split_options = this.invoke_func<String>(as, projection_rule['split_options'], data);
   }
 
-  property_type_cal(as: String) {
-    switch (as) {
-      case "Report-OO.csv": return "Owner Occupied";
-      case "Report-INV.csv": return "Investment";
-      case "Report-SMSF.csv": return "SMSF";
-      default: return "";
-    }
-  }
-
-  repayment_cal(repayment: String) {
-    if (repayment === "Both") return "Both";
-    if (repayment === "P+I") return "P & I";
-    return "Interest Only";
-  }
-
-  ongoing_fee_cal(annual: String, monthly: String, quarterly: String, semiannual: String) {
-    let total = Number(annual) + Number(monthly) * 12 + Number(semiannual) * 2 + Number(quarterly) * 4;
-    return total.toString();
+  invoke_func<S>(as: String, rule: { func: string }, data: Array<string | number | boolean | Date>): S {
+    const parsed_func = new Function('as', 'data', rule.func);
+    const val = parsed_func.call({}, as, data);
+    return val
   }
 }

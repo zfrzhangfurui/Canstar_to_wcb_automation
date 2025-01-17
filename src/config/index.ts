@@ -1,4 +1,5 @@
 import { Console } from "console";
+import fs from 'fs';
 
 export default () => {
   const pick_sys_path = ([path_to_windows, path_to_linux]) => {
@@ -12,13 +13,12 @@ export default () => {
     console.error("system environment is not supported by application");
     return process.exit(1);
   };
+
+
   const env = {
+    projectionRulePath: process.env.EXCEL_PROJECTIOIN_RULE_PATH || pick_sys_path(['\\projection-rule.json\\', '/projection-rule.json']),
     chrome: {
-      executablePath:
-        // process.env.CHROME_EXECUTABLE_PATH || 'google-chrome-stable',
-        // process.env.CHROME_EXECUTABLE_PATH || `${process.cwd()}\\chrome-win\\`,
-        process.env.CHROME_EXECUTABLE_PATH ||
-        pick_sys_path(['\\chrome\\chrome-win\\', '/chrome/chrome-linux/chrome']),
+      executablePath: process.env.CHROME_EXECUTABLE_PATH || pick_sys_path(['\\chrome\\chrome-win\\', '/chrome/chrome-linux/chrome']),
       downloadPath: pick_sys_path([`\\download\\`, '/download/']),
       headless: !!process.env.CHROME_RUNTIME_HEADLESS || false,
     },

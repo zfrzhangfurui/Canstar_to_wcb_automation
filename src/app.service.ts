@@ -13,9 +13,6 @@ export class AppService {
 
   async init() {
     try {
-      if (process.platform) {
-
-      }
       await this.downloadService.download();
       await this.excelService.handle();
       await this.wpService.upload();
