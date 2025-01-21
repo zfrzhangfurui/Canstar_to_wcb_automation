@@ -1,26 +1,28 @@
-import { cpSync, readFileSync } from 'fs';
+import { readFileSync } from 'fs';
 import { resolve } from 'path';
 
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-// import { parse } from 'csv-parse/sync';
 import * as XLSX from 'xlsx';
-// import { formatInTimeZone } from 'date-fns-tz';
-
 import { CommonService } from 'src/common/common.service';
+
+import {Inject } from '@nestjs/common';
+import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
+import { Logger } from 'winston';
 
 @Injectable()
 export class ExcelService {
   constructor(
     private readonly configService: ConfigService,
     private readonly commonService: CommonService,
+    @Inject(WINSTON_MODULE_PROVIDER) private readonly logger: Logger
   ) { }
 
   async handle() {
     const dir = await this.commonService.getDir();
-    console.log('dir to parse and export:', dir);
+    this.logger.info('dir to parse and export:', dir);
     if (!dir) {
-      console.warn('parse excel');
+      this.logger.warn('parse excel');
       return;
     }
     const base = await this.configService.get('env.chrome.downloadPath');
@@ -32,7 +34,7 @@ export class ExcelService {
 
     let data_arr: Array<{ destSheetName: String, data: WCBTemplate[] }> = [];
     for (const { as, destSheetName } of views) {
-      console.log(`===> parsing sheet ${as}`);
+      this.logger.info(`===> parsing sheet ${as}`);
       let book = XLSX.readFile(resolve(basepath, as), { type: 'file', dense: true });
       let data = book.Sheets[book.SheetNames[0]]['!data'];
       // console.log(data);
@@ -52,7 +54,7 @@ export class ExcelService {
     }
 
     const all = <{ destSheetName: String, wpItem: String }>await this.configService.get('downloadConfig.all');
-    console.log(`===> parsing sheet ${all.destSheetName}`);
+    this.logger.info(`===> parsing sheet ${all.destSheetName}`);
     data_arr.push({
       destSheetName: all.destSheetName,
       data: data_arr.reduce((acc, cur) => {
@@ -62,7 +64,7 @@ export class ExcelService {
     })
 
     for (const { destSheetName, data } of data_arr) {
-      console.log(`===> generating sheet ${destSheetName}, number of rows: ${data.length}`);
+      this.logger.info(`===> generating sheet ${destSheetName}, number of rows: ${data.length}`);
   
       let sheet = XLSX.utils.json_to_sheet(data);
 

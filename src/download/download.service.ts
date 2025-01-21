@@ -8,15 +8,21 @@ import * as sleep from 'sleep-promise';
 import { createId } from '@paralleldrive/cuid2';
 import { PuppeteerService } from 'src/puppeteer/puppeteer.service';
 
+
+import {Inject } from '@nestjs/common';
+import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
+import { Logger } from 'winston';
+
 @Injectable()
 export class DownloadService {
   constructor(
     private readonly configService: ConfigService,
     private readonly puppeteerService: PuppeteerService,
+    @Inject(WINSTON_MODULE_PROVIDER)  readonly logger: Logger
   ) {}
   async tempPath() {
     const basePath = await this.configService.get('env.chrome.downloadPath');
-    console.log('======basePath', basePath);
+    this.logger.info(`======basePath: ${basePath}`);
     // const basePath = "/home/fz/dev/code/";
     // console.log('======basePath', basePath);
     const cuid = createId();
@@ -36,14 +42,16 @@ export class DownloadService {
   }
 
   async handleDownload(page: Page, viewName: string) {
-    console.log(`===== downloading... name: ${viewName}`);
+    this.logger.info(`===== downloading... name: ${viewName}`);
     if (!viewName) {
       return;
     }
     const iframeHandle = await page.waitForSelector('app-workbook iframe');
     const frame = await iframeHandle.contentFrame();
+    this.logger.info("focusing on div.toolbar-item.insights");
     await frame.hover('div.toolbar-item.insights');
     await sleep(500);
+    this.logger.info("focused on div.toolbar-item.insights");
     const customviewsBtn = await frame.waitForSelector(
       'div.toolbar-item.insights',
       {
@@ -53,7 +61,7 @@ export class DownloadService {
     await customviewsBtn.click();
     await sleep(1000);
     const spansSelector = `xpath///span[starts-with(@title, "${viewName}")]/../..`;
-    console.log(`====${spansSelector}`);
+    this.logger.info(`====${spansSelector}`);
     await frame.waitForSelector(spansSelector, { timeout: 100000 });
 
     const span = (await frame.$$(spansSelector))[0];
@@ -98,7 +106,7 @@ export class DownloadService {
     //   'div[class^="ViewDataPanelContent__rightCtrls"] > button',
     // );
     // await btn.click();
-    console.log(`=====> name: ${viewName} downloaded`);
+    this.logger.info(`=====> name: ${viewName} downloaded`);
     await sleep(1000);
   }
 
@@ -124,7 +132,7 @@ export class DownloadService {
     await page.type('input[name="username"]', username);
     await sleep(500);
     await page.type('input[name="password"]', password);
-    console.log("======== entring username and password");
+    this.logger.info("======== entring username and password");
     await sleep(2000);
     await page.click('button[type="submit"]');
     const homeloansSelector = 'img[src="./assets/icons/home_loan.svg"]';
@@ -132,9 +140,9 @@ export class DownloadService {
       return Error(err + "maybe the wrong password");
     })
     const btn = await page.$(homeloansSelector);
-    await btn.evaluate((dd) => console.log('======dd btnP', dd));
+    await btn.evaluate((dd) => console.log(`======dd btnP: ${dd}`));
     let cc = await btn.evaluate((dd) => {
-      console.log('======dd btnP', dd);
+      console.log(`======dd btnP: ${dd}`);
       return dd;
     });
     // console.log("=== " + cc);
@@ -146,13 +154,13 @@ export class DownloadService {
     const designYourOwn = (
       await page.$$('xpath///span[contains(text(), "Design Your Own")]/..')
     )[0];
-    await designYourOwn.evaluate((dd) => console.log('======dd btnP', dd));
+    await designYourOwn.evaluate((dd) => console.log(`======dd btnP: ${dd}`));
     await designYourOwn.click();
     await sleep(10000);
     const views = await this.configService.get('downloadConfig.views');
     for (const { viewName, as } of views) {
       await this.handleDownload(page, viewName);
-      console.log(`finish download : ${viewName}`);
+      this.logger.info(`finish download : ${viewName}`);
       // return process.exit(1);
       renameSync(
         resolve(downloadPath, 'Report.csv'),

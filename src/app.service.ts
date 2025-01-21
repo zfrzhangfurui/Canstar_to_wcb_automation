@@ -14,8 +14,8 @@ export class AppService {
   async init() {
     try {
       await this.downloadService.download();
-      await this.excelService.handle();
-      await this.wpService.upload();
+      // await this.excelService.handle();
+      // await this.wpService.upload();
     } catch (err) {
       console.log('==========global catch err', err);
     }

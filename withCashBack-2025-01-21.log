@@ -1,0 +1,47 @@
+[2025-01-21 05:11:07.783 AM] [info]: 	=====executablePath
+[2025-01-21 05:11:07.786 AM] [info]: 	=====headless
+[2025-01-21 05:15:17.378 AM] [info]: 	=====executablePath
+[2025-01-21 05:15:17.383 AM] [info]: 	=====headless
+[2025-01-21 05:17:06.724 AM] [info]: 	=====executablePath
+[2025-01-21 05:17:06.728 AM] [info]: 	=====headless
+[2025-01-21 05:18:02.929 AM] [info]: 	=====executablePath
+[2025-01-21 05:18:02.933 AM] [info]: 	=====headless
+[2025-01-21 05:20:22.013 AM] [info]: 	=====executablePath
+[2025-01-21 05:20:22.033 AM] [info]: 	=====headless
+[2025-01-21 05:23:00.619 AM] [info]: 	=====executablePath
+[2025-01-21 05:23:00.641 AM] [info]: 	=====headless
+[2025-01-21 05:28:52.951 AM] [info]: 	=====executablePath: /home/fz/.cache/puppeteer/chrome/linux-131.0.6778.204/chrome-linux64/chrome
+[2025-01-21 05:28:52.954 AM] [info]: 	=====headless, true, boolean
+[2025-01-21 05:37:30.472 AM] [info]: 	=====executablePath: /home/fz/dev/canstar/chrome/chrome_linux/chrome
+[2025-01-21 05:37:30.476 AM] [info]: 	=====headless, true, boolean
+[2025-01-21 05:42:54.891 AM] [info]: 	=====executablePath: /home/fz/dev/canstar/chrome/chrome_linux/chrome
+[2025-01-21 05:42:54.894 AM] [info]: 	=====headless, true, boolean
+[2025-01-21 06:26:48.652 AM] [info]: 	=====executablePath: /home/fz/dev/canstar/chrome/chrome_linux/chrome
+[2025-01-21 06:26:48.655 AM] [info]: 	=====headless, true, boolean
+[2025-01-21 06:32:32.883 AM] [info]: 	=====executablePath: google-chrome-stable
+[2025-01-21 06:32:32.886 AM] [info]: 	=====headless, true, boolean
+[2025-01-21 06:32:39.687 AM] [info]: 	======basePath: /home/fz/dev/canstar/download/
+[2025-01-21 06:32:52.725 AM] [info]: 	======== entring username and password
+[2025-01-21 06:35:08.596 AM] [info]: 	=====executablePath: google-chrome-stable
+[2025-01-21 06:35:08.598 AM] [info]: 	=====headless, true, boolean
+[2025-01-21 06:35:15.684 AM] [info]: 	======basePath: /home/fz/dev/canstar/download/
+[2025-01-21 06:35:32.960 AM] [info]: 	======== entring username and password
+[2025-01-21 06:37:57.927 AM] [info]: 	=====executablePath: google-chrome-stable
+[2025-01-21 06:37:57.930 AM] [info]: 	=====headless, true, boolean
+[2025-01-21 06:38:09.572 AM] [info]: 	======basePath: /home/fz/dev/canstar/download/
+[2025-01-21 06:38:23.175 AM] [info]: 	======== entring username and password
+[2025-01-21 06:40:39.017 AM] [info]: 	=====executablePath: google-chrome-stable
+[2025-01-21 06:40:39.021 AM] [info]: 	=====headless, true, boolean
+[2025-01-21 06:40:45.295 AM] [info]: 	======basePath: /home/fz/dev/canstar/download/
+[2025-01-21 06:40:59.381 AM] [info]: 	======== entring username and password
+[2025-01-21 06:41:48.289 AM] [info]: 	===== downloading... name: WCB 00
+[2025-01-21 06:49:17.663 AM] [info]: 	=====executablePath: google-chrome-stable
+[2025-01-21 06:49:17.666 AM] [info]: 	=====headless, true, boolean
+[2025-01-21 06:49:24.869 AM] [info]: 	======basePath: /home/fz/dev/canstar/download/
+[2025-01-21 06:49:40.338 AM] [info]: 	======== entring username and password
+[2025-01-21 06:50:31.666 AM] [info]: 	===== downloading... name: WCB 00
+[2025-01-21 06:50:32.858 AM] [info]: 	focusing on div.toolbar-item.insights
+[2025-01-21 06:50:51.343 AM] [info]: 	focused on div.toolbar-item.insights
+[2025-01-21 06:50:55.195 AM] [info]: 	====xpath///span[starts-with(@title, "WCB 00")]/../..
+[2025-01-21 06:51:58.405 AM] [info]: 	=====> name: WCB 00 downloaded
+[2025-01-21 06:51:59.657 AM] [info]: 	finish download : WCB 00

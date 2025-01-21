@@ -1,5 +1,3 @@
-FROM cicirello/gnu-on-alpine:latest
-
 FROM ghcr.io/puppeteer/puppeteer:latest
 
 USER root
@@ -8,7 +6,12 @@ RUN apt-get update -y && apt-get install vim -y
 
 WORKDIR /home/pptruser/app
 
-# RUN npm install -g @nestjs/cli
+# COPY . .
 
+RUN npm install -g @nestjs/cli
 
+#RUN npm install
 
+#RUN chown -R pptruser:pptruser /home/pptruser/app
+
+#USER pptruser

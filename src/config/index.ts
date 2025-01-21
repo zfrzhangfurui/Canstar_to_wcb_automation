@@ -16,9 +16,9 @@ export default () => {
 
 
   const env = {
-    projectionRulePath: process.env.EXCEL_PROJECTIOIN_RULE_PATH || pick_sys_path(['\\projection-rule.json\\', '/projection-rule.json']),
+    projectionRulePath: process.env.EXCEL_PROJECTIOIN_RULE_PATH || pick_sys_path(['\\projection-rule.json', '/projection-rule.json']),
     chrome: {
-      executablePath: process.env.CHROME_EXECUTABLE_PATH || pick_sys_path(['\\chrome\\chrome-win\\', '/chrome/chrome-linux/chrome']),
+      executablePath: process.env.CHROME_EXECUTABLE_PATH || pick_sys_path(['\\chrome\\chrome-win', '/chrome/chrome-linux/chrome']),
       downloadPath: pick_sys_path([`\\download\\`, '/download/']),
       headless: !!process.env.CHROME_RUNTIME_HEADLESS || false,
     },

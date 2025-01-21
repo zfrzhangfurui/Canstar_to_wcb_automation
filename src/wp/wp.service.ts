@@ -8,22 +8,27 @@ import * as sleep from 'sleep-promise';
 import { PuppeteerService } from 'src/puppeteer/puppeteer.service';
 import { CommonService } from 'src/common/common.service';
 
+import { Inject } from '@nestjs/common';
+import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
+import { Logger } from 'winston';
+
 @Injectable()
 export class WpService {
   constructor(
     private readonly configService: ConfigService,
     private readonly commonService: CommonService,
     private readonly puppeteerService: PuppeteerService,
+    @Inject(WINSTON_MODULE_PROVIDER) private readonly logger: Logger
   ) {}
   async upload() {
     const dir = await this.commonService.getDir();
-    console.log('dir to upload:', dir);
+    this.logger.info('dir to upload:', dir);
     if (!dir) {
-      console.warn('upload wp: 没有下载文件，无需执行');
+      this.logger.warn('upload wp: 没有下载文件，无需执行');
       return;
     }
     const base = await this.configService.get('env.chrome.downloadPath');
-    console.log(`base: ${base}`);
+    this.logger.info(`base: ${base}`);
     const basepath = resolve(base, dir);
     const { views, all } = await this.configService.get('downloadConfig');
     const files = [
@@ -43,10 +48,10 @@ export class WpService {
     // console.log("=== username and password typed");
     await page.click('#wp-submit');
     await page.waitForNavigation({ timeout: 10000 });
-    console.log("===login ");
+    this.logger.info("===login ");
     for (const { file, wpItem } of files) {
       const itemUrl = `https://www.withcashback.com.au/wp-admin/upload.php?item=${wpItem}`;
-      console.log("itemUrl >> ",itemUrl);
+      this.logger.info("itemUrl >> ",itemUrl);
       await sleep(5000);
       await page.goto(itemUrl);
       const uploadCss1 = 'form.compat-item a.button-secondary';
