@@ -6,6 +6,9 @@ node_modules/
 #ignore all the download file except download directory itself 
 download/*
 
+#ignore all the download file except download directory itself 
+logger/*
+
 #ignore all the dist file 
 dist/
 

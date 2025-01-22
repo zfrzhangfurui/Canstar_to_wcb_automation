@@ -16,6 +16,13 @@ export default () => {
 
 
   const env = {
+    aging: {
+      maxFileCount: process.env.MAX_FILE_COUNT || 80,
+    },
+    scheduler: {
+      retryTime: process.env.RETRY_TIME || "5",
+      interval: process.env.INTERVAL ||  "86400000",
+    },
     projectionRulePath: process.env.EXCEL_PROJECTIOIN_RULE_PATH || pick_sys_path(['\\projection-rule.json', '/projection-rule.json']),
     chrome: {
       executablePath: process.env.CHROME_EXECUTABLE_PATH || pick_sys_path(['\\chrome\\chrome-win', '/chrome/chrome-linux/chrome']),

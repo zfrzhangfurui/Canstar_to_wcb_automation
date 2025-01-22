@@ -1,5 +1,5 @@
 import { resolve } from 'path';
-import { mkdirSync, renameSync } from 'fs';
+import { mkdirSync, renameSync, writeFileSync } from 'fs';
 
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
@@ -48,10 +48,10 @@ export class DownloadService {
     }
     const iframeHandle = await page.waitForSelector('app-workbook iframe');
     const frame = await iframeHandle.contentFrame();
-    this.logger.info("focusing on div.toolbar-item.insights");
     await frame.hover('div.toolbar-item.insights');
+    // const html = await frame.content();
+    // writeFileSync('./canstar_html', html);
     await sleep(500);
-    this.logger.info("focused on div.toolbar-item.insights");
     const customviewsBtn = await frame.waitForSelector(
       'div.toolbar-item.insights',
       {
