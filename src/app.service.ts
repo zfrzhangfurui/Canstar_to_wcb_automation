@@ -48,14 +48,14 @@ export class AppService {
   async task( retryTime: number) {
     for (let i = 1; i < retryTime; i++) {
       try {
-        this.commonService.agingFiles();
-        await this.downloadService.download();
+        // await this.commonService.agingFiles();
+        // await this.downloadService.download();
         // await this.excelService.handle();
-        // await this.wpService.upload();   
+        await this.wpService.upload();   
         this.logger.info('=======all jobs done========');
         break;
       } catch (err) {
-        this.logger.error(`global catch err:${err}`);
+        this.logger.error(`global catch err: `, err);
         this.logger.info(`=======job failed, retry automation task, remaining times: ${retryTime - i } ========`);
       }
     };

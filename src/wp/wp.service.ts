@@ -22,9 +22,9 @@ export class WpService {
   ) {}
   async upload() {
     const dir = await this.commonService.getDir();
-    this.logger.info('dir to upload:', dir);
+    this.logger.info(`dir to upload: ${dir}`);
     if (!dir) {
-      this.logger.warn('upload wp: 没有下载文件，无需执行');
+      this.logger.warn('upload wp: no contents to upload');
       return;
     }
     const base = await this.configService.get('env.chrome.downloadPath');
@@ -51,11 +51,11 @@ export class WpService {
     this.logger.info("===login ");
     for (const { file, wpItem } of files) {
       const itemUrl = `https://www.withcashback.com.au/wp-admin/upload.php?item=${wpItem}`;
-      this.logger.info("itemUrl >> ",itemUrl);
+      this.logger.info(`itemUrl >> ${itemUrl}`);
       await sleep(5000);
       await page.goto(itemUrl);
       const uploadCss1 = 'form.compat-item a.button-secondary';
-      const btn = await page.waitForSelector(uploadCss1, { timeout: 10000 });
+      const btn = await page.waitForSelector(uploadCss1, { timeout: 50000 });
       await sleep(5000);
       await btn.click();
       await page.waitForNavigation({ timeout: 5000 });

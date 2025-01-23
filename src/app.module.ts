@@ -1,4 +1,4 @@
-import {Module } from '@nestjs/common';
+import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 
 import config from './config/';
@@ -13,7 +13,7 @@ import { CommonModule } from './common/common.module';
 import { WinstonModule } from 'nest-winston';
 import 'winston-daily-rotate-file';
 import { format, transports } from "winston";
-const { combine, timestamp, align, printf } = format;
+const { combine, timestamp, align, printf, errors } = format;
 
 @Module({
   imports: [
@@ -25,9 +25,14 @@ const { combine, timestamp, align, printf } = format;
     CommonModule,
     WinstonModule.forRoot({
       format: combine(
+        errors({ stack: true }),
         timestamp({ format: 'YYYY-MM-DD hh:mm:ss.SSS A' }),
         align(),
-        printf((info) => `[${info.timestamp}] [${info.level}]: ${info.message}`)
+        printf((info) => { 
+          if(info.stack){
+            return `[${info.timestamp}] [${info.level}]: ${info.message} (${info.stack})`;
+          }
+          return `[${info.timestamp}] [${info.level}]: ${info.message}`;}),
       ),
       transports: [
         new transports.Console(),
@@ -39,9 +44,12 @@ const { combine, timestamp, align, printf } = format;
             maxSize: '5m',
             maxFiles: '180d',
           }
-        )]
-  }),
+        )],
+        // exceptionHandlers: [
+        //   new transports.File({ filename: 'exceptions.log' })
+        // ]
+    }),
   ],
   providers: [AppService],
 })
-export class AppModule {}
+export class AppModule { }

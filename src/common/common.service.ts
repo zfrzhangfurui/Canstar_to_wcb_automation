@@ -49,6 +49,6 @@ export class CommonService {
       rmdirSync(resolve(base, dir_to_remove.file),{ recursive: true });
       length = dir.length;
     }
-    this.logger.info("===> aging down");
+    this.logger.info("===> aging done");
   }
 }

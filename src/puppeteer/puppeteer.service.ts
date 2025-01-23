@@ -23,7 +23,8 @@ export class PuppeteerService {
     const browser = await puppeteer.launch({
       headless,
       executablePath,
-      ignoreDefaultArgs: ['--enable-automation','--disable-extensions'],
+      args: ['--window-size=1920,1080'],
+      ignoreDefaultArgs: ['--enable-automation','--disable-extensions','--no-sandbox'],
       defaultViewport: null,
     });
     return browser;

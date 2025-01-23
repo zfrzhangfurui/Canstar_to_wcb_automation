@@ -23,8 +23,6 @@ export class DownloadService {
   async tempPath() {
     const basePath = await this.configService.get('env.chrome.downloadPath');
     this.logger.info(`======basePath: ${basePath}`);
-    // const basePath = "/home/fz/dev/code/";
-    // console.log('======basePath', basePath);
     const cuid = createId();
     const fullpath = resolve(basePath, cuid);
     return fullpath;
@@ -49,8 +47,6 @@ export class DownloadService {
     const iframeHandle = await page.waitForSelector('app-workbook iframe');
     const frame = await iframeHandle.contentFrame();
     await frame.hover('div.toolbar-item.insights');
-    // const html = await frame.content();
-    // writeFileSync('./canstar_html', html);
     await sleep(500);
     const customviewsBtn = await frame.waitForSelector(
       'div.toolbar-item.insights',
@@ -59,11 +55,11 @@ export class DownloadService {
       },
     );
     await customviewsBtn.click();
-    await sleep(1000);
+    await sleep(5000);
     const spansSelector = `xpath///span[starts-with(@title, "${viewName}")]/../..`;
     this.logger.info(`====${spansSelector}`);
     await frame.waitForSelector(spansSelector, { timeout: 100000 });
-
+    await sleep(5000);
     const span = (await frame.$$(spansSelector))[0];
     await span.click();
     await sleep(10000);
