@@ -48,9 +48,9 @@ export class AppService {
   async task( retryTime: number) {
     for (let i = 1; i < retryTime; i++) {
       try {
-        // await this.commonService.agingFiles();
-        // await this.downloadService.download();
-        // await this.excelService.handle();
+        await this.commonService.agingFiles();
+        await this.downloadService.download();
+        await this.excelService.handle();
         await this.wpService.upload();   
         this.logger.info('=======all jobs done========');
         break;

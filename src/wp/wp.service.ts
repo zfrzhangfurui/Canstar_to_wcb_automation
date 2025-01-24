@@ -50,15 +50,11 @@ export class WpService {
     await page.waitForNavigation({ timeout: 10000 });
     this.logger.info("===login ");
     for (const { file, wpItem } of files) {
-      const itemUrl = `https://www.withcashback.com.au/wp-admin/upload.php?item=${wpItem}`;
+      const itemUrl = `https://www.withcashback.com.au/wp-admin/upload.php?page=enable-media-replace%2Fenable-media-replace.php&action=media_replace&attachment_id=${wpItem}`;
       this.logger.info(`itemUrl >> ${itemUrl}`);
-      await sleep(5000);
+      await sleep(1000);
       await page.goto(itemUrl);
-      const uploadCss1 = 'form.compat-item a.button-secondary';
-      const btn = await page.waitForSelector(uploadCss1, { timeout: 50000 });
       await sleep(5000);
-      await btn.click();
-      await page.waitForNavigation({ timeout: 5000 });
       const uploadCss2 = 'input#upload-file';
       const fileInput = await page.waitForSelector(uploadCss2, {
         timeout: 5000,
@@ -68,6 +64,7 @@ export class WpService {
       await fileInput.uploadFile(filepath);
       await page.click('input#submit');
       await sleep(5000);
+      this.logger.info(`===> file:${file} uploaded successfully`);
     }
   }
 }

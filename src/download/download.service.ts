@@ -92,16 +92,6 @@ export class DownloadService {
     );
 
     await finalDownloadBtn.click();
-    // const targetPage: Page = (await this.handlePopDownload(page)) as Page;
-    // page.browser().removeAllListeners();
-    // await targetPage.waitForSelector(
-    //   'xpath///div[contains(text(), "Migrated Data")]',
-    //   { timeout: 30000 },
-    // );
-    // const btn = await targetPage.$(
-    //   'div[class^="ViewDataPanelContent__rightCtrls"] > button',
-    // );
-    // await btn.click();
     this.logger.info(`=====> name: ${viewName} downloaded`);
     await sleep(1000);
   }

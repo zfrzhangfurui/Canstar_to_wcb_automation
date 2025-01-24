@@ -26,9 +26,16 @@ const { combine, timestamp, align, printf, errors } = format;
     WinstonModule.forRoot({
       format: combine(
         errors({ stack: true }),
-        timestamp({ format: 'YYYY-MM-DD hh:mm:ss.SSS A' }),
+        timestamp({ format: new Date().toLocaleTimeString('en-AU',{
+          year: "numeric",
+          month: "2-digit",
+          day: "2-digit",
+          hour12: false,
+          timeZone: "Australia/Melbourne"
+        })}),
         align(),
         printf((info) => { 
+          console.log(info);
           if(info.stack){
             return `[${info.timestamp}] [${info.level}]: ${info.message} (${info.stack})`;
           }
