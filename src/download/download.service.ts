@@ -28,17 +28,6 @@ export class DownloadService {
     return fullpath;
   }
 
-  async handlePopDownload(page: Page) {
-    const promise = new Promise((resolve) => {
-      page.browser().on('targetcreated', async (target: any) => {
-        if (target.type() === 'page') {
-          resolve(await target.page());
-        }
-      });
-    });
-    return promise;
-  }
-
   async handleDownload(page: Page, viewName: string) {
     this.logger.info(`===== downloading... name: ${viewName}`);
     if (!viewName) {

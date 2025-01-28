@@ -24,7 +24,11 @@ export class CommonService {
   };
 
   orderOldestFiles = (dir: string) => {
-    return readdirSync(dir)
+    this.logger.info(`aging function: orderOldestFiles path: ${dir}`);
+    let dir_array = readdirSync(dir);
+    
+    
+    return dir_array
       .filter((file) => lstatSync(join(dir, file)).isDirectory())
       .map((file) => ({ file, mtime: lstatSync(join(dir, file)).mtime }))
       .sort((a, b) => a.mtime.getTime() - b.mtime.getTime());

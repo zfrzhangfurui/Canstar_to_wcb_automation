@@ -35,7 +35,6 @@ const { combine, timestamp, align, printf, errors } = format;
         })}),
         align(),
         printf((info) => { 
-          console.log(info);
           if(info.stack){
             return `[${info.timestamp}] [${info.level}]: ${info.message} (${info.stack})`;
           }
