@@ -27,7 +27,6 @@ export class CommonService {
     this.logger.info(`aging function: orderOldestFiles path: ${dir}`);
     let dir_array = readdirSync(dir);
     
-    
     return dir_array
       .filter((file) => lstatSync(join(dir, file)).isDirectory())
       .map((file) => ({ file, mtime: lstatSync(join(dir, file)).mtime }))
@@ -37,7 +36,6 @@ export class CommonService {
   async getDir() {
     const base = await this.configService.get('env.chrome.downloadPath');
     const dir = this.orderReccentFiles(base);
-    this.logger.info(dir);
     return dir.length ? dir[0].file : undefined;
   }
 

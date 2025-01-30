@@ -1,0 +1,28 @@
+FROM ghcr.io/puppeteer/puppeteer:24.1.1 AS base
+
+USER root
+
+RUN apt-get update -y && apt-get install vim -y
+
+WORKDIR /home/pptruser/app
+
+#RUN chown -R pptruser:pptruser /home/pptruser/app
+
+COPY . ./
+
+FROM base AS develop
+
+RUN npm install -g @nestjs/cli && npm install
+
+RUN chown -R pptruser:pptruser /home/pptruser/app
+
+USER pptruser
+
+#RUN mkdir csv_download && mkdir logger 
+
+
+#ENTRYPOINT ["node"]
+
+#CMD ["dist/main.js", "--env-file .env"]
+
+

@@ -3,7 +3,7 @@ import { mkdirSync, renameSync, writeFileSync } from 'fs';
 
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { Page } from 'puppeteer-core';
+import { Browser, Page } from 'puppeteer-core';
 import * as sleep from 'sleep-promise';
 import { createId } from '@paralleldrive/cuid2';
 import { PuppeteerService } from 'src/puppeteer/puppeteer.service';
@@ -17,7 +17,6 @@ import { Logger } from 'winston';
 export class DownloadService {
   constructor(
     private readonly configService: ConfigService,
-    private readonly puppeteerService: PuppeteerService,
     @Inject(WINSTON_MODULE_PROVIDER)  readonly logger: Logger
   ) {}
   async tempPath() {
@@ -85,10 +84,9 @@ export class DownloadService {
     await sleep(1000);
   }
 
-  async download() {
-    const browser = await this.puppeteerService.launch();
+  async download(browser:Browser) {
     const page = await browser.newPage();
-    const client = await page.target().createCDPSession();
+    const client = await page.createCDPSession();
     const downloadPath = await this.tempPath();
     mkdirSync(downloadPath, { recursive: true });
     await client.send('Page.setDownloadBehavior', {

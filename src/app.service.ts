@@ -10,11 +10,14 @@ import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
 import { Logger } from 'winston';
 import * as sleep from 'sleep-promise';
 import { CommonService } from './common/common.service';
+import { PuppeteerService } from './puppeteer/puppeteer.service';
+import { Browser } from 'puppeteer-core';
 
 
 @Injectable()
 export class AppService {
   constructor(
+    private readonly puppeteerService: PuppeteerService,
     private readonly downloadService: DownloadService,
     private readonly excelService: ExcelService,
     private readonly wpService: WpService,
@@ -46,16 +49,26 @@ export class AppService {
   }
 
   async task( retryTime: number) {
+  
     for (let i = 1; i < retryTime; i++) {
+      let browser:Browser;
       try {
+        browser = await this.puppeteerService.launch();
         await this.commonService.agingFiles();
-        await this.downloadService.download();
+        await this.downloadService.download(browser);
         await this.excelService.handle();
-        await this.wpService.upload();   
+        await this.wpService.upload(browser);   
         this.logger.info('=======all jobs done========');
+        await browser.close();
+        this.logger.info("browser closed");
         break;
       } catch (err) {
         this.logger.error(`global catch err: `, err);
+        let inner_logger = this.logger;
+        await browser.close().catch((err)=>{
+          inner_logger.error(`browser close error: `, err);
+        });
+        this.logger.info("browser closed");
         this.logger.info(`=======job failed, retry automation task, remaining times: ${retryTime - i } ========`);
       }
     };

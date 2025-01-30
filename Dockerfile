@@ -10,8 +10,6 @@ FROM base AS build
 
 COPY . ./
 
-#RUN npm install -g @nestjs/cli && npm install --omit=dev && npm run build
-
 RUN npm install -g @nestjs/cli && npm install --omit=dev && npm run build
 
 FROM base AS prod
