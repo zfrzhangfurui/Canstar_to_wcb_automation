@@ -24,14 +24,16 @@ COPY projection-rule.json ./
 
 COPY --from=build /home/pptruser/app/dist /home/pptruser/app/dist/
 
+#RUN chown -R pptruser:pptruser /home/pptruser/app
+
 RUN mkdir csv_download && mkdir logger 
 
 RUN chown -R pptruser:pptruser /home/pptruser/app
 
 USER pptruser
 
-ENTRYPOINT ["node"]
+#ENTRYPOINT ["node"]
 
-CMD ["dist/main.js", "--env-file .env"]
+#CMD ["dist/main.js", "--env-file .env"]
 
 

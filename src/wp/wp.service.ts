@@ -20,7 +20,11 @@ export class WpService {
     private readonly commonService: CommonService,
     @Inject(WINSTON_MODULE_PROVIDER) private readonly logger: Logger
   ) {}
-  async upload(browser:Browser) {
+
+  async upload():Promise<(browser: Browser) => Promise<void>>{
+    return this.upload.bind(this);
+  }
+  async _upload(browser:Browser) {
     const dir = await this.commonService.getDir();
     this.logger.info(`dir to upload: ${dir}`);
     if (!dir) {

@@ -39,14 +39,14 @@ export class DownloadService {
     const customviewsBtn = await frame.waitForSelector(
       'div.toolbar-item.insights',
       {
-        timeout: 60000,
+        timeout: 50000,
       },
     );
     await customviewsBtn.click();
     await sleep(5000);
     const spansSelector = `xpath///span[starts-with(@title, "${viewName}")]/../..`;
     this.logger.info(`====${spansSelector}`);
-    await frame.waitForSelector(spansSelector, { timeout: 100000 });
+    await frame.waitForSelector(spansSelector, { timeout: 50000 });
     await sleep(5000);
     const span = (await frame.$$(spansSelector))[0];
     await span.click();
@@ -84,7 +84,11 @@ export class DownloadService {
     await sleep(1000);
   }
 
-  async download(browser:Browser) {
+  async download(): Promise<(browser: Browser) => Promise<void>>{
+    return this._download.bind(this);  
+  }
+
+  async _download(browser:Browser) {
     const page = await browser.newPage();
     const client = await page.createCDPSession();
     const downloadPath = await this.tempPath();

@@ -1,7 +1,0 @@
-services:
-  app:
-    build: .
-    container_name: canstar
-    command: ["npm","start","--reload"]  
-    volumes: 
-      - .:/home/pptruser/app
