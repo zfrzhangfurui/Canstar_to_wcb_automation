@@ -6,9 +6,21 @@ RUN apt-get update -y && apt-get install vim -y
 
 WORKDIR /home/pptruser/app
 
-FROM base AS build
-
 COPY . ./
+
+FROM base AS develop
+
+RUN npm install -g @nestjs/cli && npm install
+
+RUN mkdir csv_download && mkdir logger 
+
+RUN chown -R pptruser:pptruser /home/pptruser/app
+
+USER pptruser
+
+CMD ["npm", "start"]
+
+FROM base AS build
 
 RUN npm install -g @nestjs/cli && npm install --omit=dev && npm run build
 

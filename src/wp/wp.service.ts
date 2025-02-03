@@ -22,7 +22,7 @@ export class WpService {
   ) {}
 
   async upload():Promise<(browser: Browser) => Promise<void>>{
-    return this.upload.bind(this);
+    return this._upload.bind(this);
   }
   async _upload(browser:Browser) {
     const dir = await this.commonService.getDir();
